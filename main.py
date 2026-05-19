@@ -7,7 +7,7 @@ import threading
 import telebot
 import requests
 
-print("WOMGPT-DGVIKAKA🇻🇳 - TON SUPER FARMER v4.2 (10 VÍ)")
+print("WOMGPT-DGVIKAKA🇻🇳 - TON SUPER FARMER v4.3 (10 VÍ - Chỉ Check All)")
 
 TELEGRAM_TOKEN = "8959793781:AAEPhU8IYadNk5klnUNafWqIsZnH5P8ecp4"
 CHAT_ID = "7523022638"
@@ -55,42 +55,32 @@ def monitor_wallet(wallet):
 # ===================== TELEGRAM MENU =====================
 @bot.message_handler(commands=['start'])
 def start(message):
-    markup = telebot.types.InlineKeyboardMarkup(row_width=2)
-    for w in wallets:
-        markup.add(telebot.types.InlineKeyboardButton(f"👛 Ví {w['id']}", callback_data=f"check_{w['id']}"))
-    
-    markup.add(telebot.types.InlineKeyboardButton("🔎 CHECK TẤT CẢ VÍ", callback_data="check_all"))
+    markup = telebot.types.InlineKeyboardMarkup(row_width=1)
+    markup.add(telebot.types.InlineKeyboardButton("🔎 CHECK TẤT CẢ 10 VÍ", callback_data="check_all"))
     markup.add(telebot.types.InlineKeyboardButton("📤 EXPORT ALL MNEMONIC", callback_data="export_mn"))
     
-    bot.send_message(CHAT_ID, "🔥 **TON SUPER FARMER v4.2 (10 VÍ)**\n10 ví đang monitor mạnh!", reply_markup=markup)
+    bot.send_message(CHAT_ID, "🔥 **TON SUPER FARMER v4.3 (10 VÍ)**\nChỉ còn 1 nút Check All như yêu cầu.", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     try:
         if call.data == "check_all":
             bot.answer_callback_query(call.id, "Đang check tất cả 10 ví...")
-            msg = "📊 **CHECK TẤT CẢ 10 VÍ**\n\n"
+            msg = "📊 **CHECK TẤT CẢ 10 VÍ - CHI TIẾT**\n\n"
             for w in wallets:
                 bal = check_ton_balance(w["address"])
-                msg += f"**Ví {w['id']}**\n`{w['address']}`\nBalance: **{bal} TON**\n\n"
+                msg += f"**Ví {w['id']}**\nAddress: `{w['address']}`\nBalance: **{bal} TON**\n\n"
             bot.edit_message_text(msg, call.message.chat.id, call.message.message_id)
 
-        elif call.data.startswith("check_"):
-            vid = int(call.data.split("_")[1])
-            wallet = next((w for w in wallets if w["id"] == vid), None)
-            if wallet:
-                bal = check_ton_balance(wallet["address"])
-                bot.send_message(CHAT_ID, f"📌 **Ví {vid}**\nAddress: `{wallet['address']}`\nBalance: **{bal} TON**")
-
         elif call.data == "export_mn":
-            bot.send_message(CHAT_ID, "⚠️ **MNEMONIC TẤT CẢ 10 VÍ** (Sao chép ngay rồi xóa tin nhắn):")
+            bot.send_message(CHAT_ID, "⚠️ **MNEMONIC TẤT CẢ 10 VÍ** (Sao chép ngay và xóa tin nhắn):")
             for w in wallets:
                 bot.send_message(CHAT_ID, f"Ví {w['id']}: `{w['mnemonic']}`")
     except:
         pass
 
 if __name__ == "__main__":
-    bot.send_message(CHAT_ID, "🚀 **TON SUPER FARMER v4.2 (10 VÍ) ĐÃ ONLINE 24/7!**\nGõ /start để mở menu.")
+    bot.send_message(CHAT_ID, "🚀 **TON SUPER FARMER v4.3 ĐÃ ONLINE 24/7!**\nGõ /start để mở menu.")
     
     for wallet in wallets:
         t = threading.Thread(target=monitor_wallet, args=(wallet,), daemon=True)
